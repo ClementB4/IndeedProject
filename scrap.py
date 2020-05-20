@@ -39,16 +39,18 @@ def verification(metier, localisation, contrat):
         page = rq.get(f"https://www.indeed.fr/emplois?q={metier}&l={localisation}")
     soup = bs(page.content, 'html.parser')
     td = soup.find('td', id='resultsCol')
-    while len(td.find_all('div', {'class':'invalid_location'})) > 0 or len(td.find_all('div', {'class':'no_results'})) > 0:
-        if len(td.find_all('div', {'class':'invalid_location'})) > 0:
-            print("La localisation demandé n'a pas pu être trouvé probablement dû à une faute d'orthographe. \nVeuillez rééssayer.")
-            metier, localisation, contrat = ask(metier=metier, contrat=contrat)
-        elif len(td.find_all('div', {'class':'no_results'})) > 0:
-            print(f"Aucun emploi correspondant à la recherche : {metier} à {localisation} avec votre type de contrat, veuillez recommencer.")
-            metier, localisation, contrat = ask()
-        page = rq.get(f"https://www.indeed.fr/emplois?q={metier}&l={localisation}&jt={contrat}")
-        soup = bs(page.content, 'html.parser')
-        td = soup.find('td', id='resultsCol')
+    if len(td.find_all('div', {'class':'invalid_location'})) > 0 or len(td.find_all('div', {'class':'no_results'})) > 0:
+        print('Pas de métier trouvé pour cette recherche.')
+    # while len(td.find_all('div', {'class':'invalid_location'})) > 0 or len(td.find_all('div', {'class':'no_results'})) > 0:
+    #     if len(td.find_all('div', {'class':'invalid_location'})) > 0:
+    #         print("La localisation demandé n'a pas pu être trouvé probablement dû à une faute d'orthographe. \nVeuillez rééssayer.")
+    #         metier, localisation, contrat = ask(metier=metier, contrat=contrat)
+    #     elif len(td.find_all('div', {'class':'no_results'})) > 0:
+    #         print(f"Aucun emploi correspondant à la recherche : {metier} à {localisation} avec votre type de contrat, veuillez recommencer.")
+    #         metier, localisation, contrat = ask()
+    #     page = rq.get(f"https://www.indeed.fr/emplois?q={metier}&l={localisation}&jt={contrat}")
+    #     soup = bs(page.content, 'html.parser')
+    #     td = soup.find('td', id='resultsCol')
     else:
         print('Vérification valide.')
     return soup
