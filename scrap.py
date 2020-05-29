@@ -136,12 +136,15 @@ def get_next_page(soup, i, metier, localisation, contrat):
     return next_soup
 
 def suivant(soup, metier, localisation, contrat):
-    for i in range(10, 1010, 10):
+    for i in range(10, 110, 10):
         td = soup.find('td', id='resultsCol')
         if td.find_all('a', rel='noopener nofollow') == None:
             break
         else:
             job = reset_job()
+            job['ville_recherche'] = localisation
+            job['metier_recherche'] = metier
+            job['contrat_recherche'] = contrat
             next_soup = get_next_page(soup, i, metier, localisation, contrat)
             id_link_title(next_soup, job)
             get_company(next_soup, job)
@@ -161,7 +164,11 @@ def add_db(job):
                 'lieu':job.get('lieu')[i],
                 'salaire':job.get('salaire')[i],
                 'publication':job.get('publication')[i],
-                'description':job.get('description')[i]
+                'description':job.get('description')[i],
+                'contrat_recherche':job.get('contrat_recherche'),
+                'metier_recherche':job.get('metier_recherche'),
+                'ville_recherche':job.get('ville_recherche')
+
             }
             db['data'].insert_one(to_add)
 
@@ -169,7 +176,8 @@ def reset_job():
     job = {
         'id':[], 'lien':[], 'poste':[], 
         'entreprise':[], 'contrat':[], 'lieu':[], 
-        'salaire':[], 'publication':[], 'description':[]
+        'salaire':[], 'publication':[], 'description':[],
+        'metier_recherche':[], 'ville_recherche':[], 'contrat_recherche':[]
         }
     return job
 
@@ -179,6 +187,9 @@ def run():
             for contrat in contrats:
                 print('Début pour %s à %s en %s'%(metier, localisation, contrat))
                 job = reset_job()
+                job['ville_recherche'] = localisation
+                job['metier_recherche'] = metier
+                job['contrat_recherche'] = contrat
                 soup = verification(metier, localisation, contrat)
                 id_link_title(soup, job)
                 get_company(soup, job)
